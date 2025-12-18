@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
+from django.urls import reverse, reverse_lazy
+from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from typing import List
 
+from .forms import SignupForm, LoginForm
 from .models import Question, Tag, Answer
 
 
@@ -73,17 +77,52 @@ def hotQuestions(request):
 
 
 def signup(request):
+    if request.method != 'POST':
+        form = SignupForm()
+    else:
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            auth.login(request, user)
+            return HttpResponseRedirect(reverse('index'))
+        
     return render(
         request=request,
-        template_name='signup.html'
+        template_name='signup.html',
+        context={
+            'form': form
+        }
     )
 
 
 def login(request):
+    if request.method != 'POST':
+        form = LoginForm()
+    else:
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            user = auth.authenticate(username=username, password=password)
+            if user:
+                auth.login(request, user)
+                return HttpResponseRedirect(reverse('index'))
+            else:
+                form.add_error(None, 'Invalid username or password')
+
     return render(
         request=request,
-        template_name='login.html'
+        template_name='login.html',
+        context={
+            'form': form
+        }
     )
+
+
+def logout(request):
+    auth.logout(request)
+    return HttpResponseRedirect(reverse('index'))
 
 
 def settings(request):

@@ -15,24 +15,42 @@
 		<nav class="navbar bg-white border-bottom shadow-sm" style="min-height: 72px;">
 			<div class="container-fluid d-flex justify-content-between align-items-center px-4">
 
-				<a class="navbar-brand fw-bold fs-3 text-dark m-0" href="/">AskMe</a>
+				<a class="navbar-brand fw-bold fs-3 text-dark m-0" href="{% url 'index' %}">AskMe</a>
 
 				<div class="d-flex align-items-center">
-					<img
-						src="{% static 'img/user-avatar.jpg' %}"
-						alt="User Avatar"
-						width="44"
-						height="44"
-						class="border me-3"
-						style="object-fit: cover;"
-					/>
+					{% if user.is_authenticated %}
+					<!-- Если пользователь авторизован -->
+					{% if user.profile.avatar %}
+						<img src="{{ user.profile.avatar.url }}"
+							 alt="User Avatar"
+							 width="44"
+							 height="44"
+							 class="rounded-circle border me-3"
+							 style="object-fit: cover;" />
+					{% else %}
+						<img src="{% static 'img/user-avatar.jpg' %}"
+							 alt="User Avatar"
+							 width="44"
+							 height="44"
+							 class="rounded-circle border me-3"
+							 style="object-fit: cover;" />
+					{% endif %}
 					<div class="d-flex flex-column justify-content-center lh-sm text-end">
-						<span class="fw-semibold text-dark">Username</span>
+						<span class="fw-semibold text-dark">{{ user.username }}</span>
 						<div class="small">
-							<a href="/settings" class="text-secondary text-decoration-none me-2">Settings</a>
-							<a href="/" class="text-danger text-decoration-none fw-semibold">Logout</a>
+							<a href="{% url 'settings' %}" class="text-secondary text-decoration-none me-2">Settings</a>
+							<a href="{% url 'logout' %}" class="text-danger text-decoration-none fw-semibold">Logout</a>
 						</div>
 					</div>
+					{% else %}
+					<!-- Если пользователь не авторизован -->
+					<div class="d-flex flex-column justify-content-center lh-sm text-end">
+						<div class="small">
+							<a href="{% url 'login' %}" class="text-secondary text-decoration-none me-3">Login</a>
+							<a href="{% url 'signup' %}" class="btn btn-outline-primary btn-sm">Sign up</a>
+						</div>
+					</div>
+					{% endif %}
 				</div>
 			</div>
 		</nav>
@@ -41,7 +59,6 @@
 			<div class="row">
 				<div class="col-md-7 me-5">
 					{% block content %} 
-
 					{% endblock %}
 				</div>
 				<div class="col-md-4">
