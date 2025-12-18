@@ -1,0 +1,78 @@
+{% extends "layout/base.html" %}
+{% load static %}
+
+{% block content %}
+		<div class="container mt-4">
+			<h2 class="text-start mb-4">Registration</h2>
+			<h5 class="text-danger">Sorry, this email addres already registred!</h5>
+
+			<div class="row">
+				<div class="col-md-7 m-5">
+					<div class="row row-cols-1 g-2" style="margin-left: -300px">
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">Login</h3>
+							</div>
+							<div class="col-md-6">
+								<input class="form-control" type="text" placeholder="Enter login" />
+							</div>
+						</div>
+
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">Email</h3>
+							</div>
+							<div class="col-md-6">
+								<input class="form-control" type="text" placeholder="Enter email" />
+							</div>
+						</div>
+
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">username</h3>
+							</div>
+							<div class="col-md-6">
+								<input class="form-control" type="text" placeholder="Enter username" />
+							</div>
+						</div>
+
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">Password</h3>
+							</div>
+							<div class="col-md-6">
+								<input class="form-control" type="text" placeholder="Enter password" />
+							</div>
+						</div>
+
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">Repeat password</h3>
+							</div>
+							<div class="col-md-6">
+								<input class="form-control" type="text" placeholder="Enter password again" />
+							</div>
+						</div>
+
+						<div class="row align-items-start mb-4">
+							<div class="col-md-3">
+								<h3 class="mb-0">Upload avatar</h3>
+							</div>
+							<div class="col-md-6">
+								<div class="d-flex mb-5">
+									<input class="form-control me-2" type="text" placeholder="Enter filepath" />
+									<a href="#" class="btn btn-secondary btn-lg">Choose</a>
+								</div>
+								<a href="#" class="btn btn-success btn-lg">Register!</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>
+
+{% endblock %}

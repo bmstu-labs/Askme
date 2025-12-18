@@ -72,10 +72,10 @@ def hotQuestions(request):
     )
 
 
-def register(request):
+def signup(request):
     return render(
         request=request,
-        template_name='register.html'
+        template_name='signup.html'
     )
 
 
