@@ -3,50 +3,64 @@
 
 {% block content %}
 
-<div class="col-md-7 me-5">
-  <div class="p-3" style="margin-left: -300px; min-height: 1000px;">
+<div class="container py-5">
+  <div class="col-md-7 mx-auto">
+    <h3 class="mb-4 fw-semibold border-bottom pb-2">Ask a Question</h3>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+            <strong>Please correct the errors below:</strong>
+            <ul class="mb-0">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
 
-    <!-- Title -->
-    <label class="form-label fw-semibold fs-4">Title</label>
-    <input 
-      type="text" 
-      class="form-control mb-3" 
-      placeholder="Enter question title" 
-      style="height: 40px; resize: none;"
-    />
+    <form method="POST" action="{% url 'ask' %}" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        
+        <!-- Title -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold">{{ form.title.label }}</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="text-danger small mt-1">{{ form.title.errors|join:", " }}</div>
+            {% endif %}
+        </div>
 
-    <!-- Details -->
-    <label class="form-label fw-semibold fs-4 mt-3">Details</label>
-    <textarea 
-      class="form-control mb-4" 
-      rows="6" 
-      placeholder="Add more details" 
-      style="resize: none;"
-    ></textarea>
+        <!-- Details -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold">{{ form.text.label }}</label>
+            {{ form.text }}
+            {% if form.text.errors %}
+                <div class="text-danger small mt-1">{{ form.text.errors|join:", " }}</div>
+            {% endif %}
+        </div>
 
-    <!-- Tags -->
-    <label class="form-label fw-semibold fs-4 mt-4">Tags</label>
-    <input 
-      type="text" 
-      class="form-control mb-3" 
-      placeholder="Enter tags" 
-      style="height: 40px; resize: none;"
-    />
+        <!-- Tags -->
+        <div class="mb-4">
+            <label class="form-label fw-semibold">{{ form.tags.label }}</label>
+            {{ form.tags }}
+            <div class="form-text small mt-1">Enter up to 5 tags separated by commas</div>
+            {% if form.tags.errors %}
+                <div class="text-danger small mt-1">{{ form.tags.errors|join:", " }}</div>
+            {% endif %}
+        </div>
 
-    <!-- Button -->
-    <div class="mt-4">
-      <a 
-        href="#" 
-        class="btn btn-lg text-white fw-semibold" 
-        style="background-color: #f48024; width: 20%;"
-      >
-        Ask
-      </a>
-    </div>
-
+        <!-- Button -->
+        <div class="mt-4">
+            <button type="submit" 
+                    class="btn btn-lg text-white fw-semibold shadow-sm px-4" 
+                    style="background-color: #f48024; border-color: #f48024;">
+                Ask Question
+            </button>
+        </div>
+    </form>
   </div>
 </div>
-
-
 
 {% endblock %}
