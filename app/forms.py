@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from app.models import Profile, Question
+from app.models import Profile, Question, Tag
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=100, label='Username')
@@ -37,3 +37,29 @@ class SignupForm(forms.Form):
         user.save()
         Profile.objects.create(user=user)
         return user
+    
+
+class AskQuestionForm(forms.Form):
+    title = forms.CharField(max_length=200, label='Title')
+    text = forms.CharField(widget=forms.Textarea, label='Details')
+    tags = forms.CharField(max_length=200, label='Tags')
+
+    # TODO: add validation for title, text and tags
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+    
+    def save(self, author):
+        question = Question.objects.create(
+            title=self.cleaned_data['title'],
+            text=self.cleaned_data['text'],
+            author=author
+        )
+
+        # Separate tags by comma
+        tag_names = [tag.strip() for tag in self.cleaned_data['tags'].split(',') if tag.strip()]
+        for tag_name in tag_names:
+            tag, created = Tag.objects.get_or_create(name=tag_name)
+            question.tags.add(tag)
+        
+        return question

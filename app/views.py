@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from typing import List
 
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, AskQuestionForm
 from .models import Question, Tag, Answer
 
 
@@ -132,10 +132,22 @@ def settings(request):
     )
 
 
+@login_required
 def ask(request):
+    if request.method != 'POST':
+        form = AskQuestionForm()
+    else:
+        form = AskQuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(author=request.user)
+            return redirect('question', question_id=question.id)
+
     return render(
         request=request,
-        template_name='ask.html'
+        template_name='ask.html',
+        context={
+            'form': form
+        }
     )
 
 
