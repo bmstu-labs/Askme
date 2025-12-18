@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 
-from app.models import Profile, Question
+from app.models import Profile, Question, Answer
 
 class LoginForm(forms.Form):
     username = forms.CharField(max_length=100, label='Username')
@@ -37,3 +37,21 @@ class SignupForm(forms.Form):
         user.save()
         Profile.objects.create(user=user)
         return user
+    
+
+
+class AnswerForm(forms.Form):
+    text = forms.CharField(max_length=200, label='Answer')
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+    
+    def save(self, author, question):
+        answer = Answer.objects.create(
+            text=self.cleaned_data['text'],
+            author=author,
+            question=question,
+        )
+
+        return answer

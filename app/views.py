@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -6,7 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from typing import List
 
-from .forms import SignupForm, LoginForm
+from .forms import SignupForm, LoginForm, AnswerForm
 from .models import Question, Tag, Answer
 
 
@@ -30,7 +30,23 @@ def getAnswers(q: Question):
 
 def question(request, question_id: int):
     q = get_object_or_404(Question, pk=question_id)
-
+    
+    if request.method != 'POST':
+        form = AnswerForm()
+    else:
+        if not request.user.is_authenticated:
+            return redirect('login')
+        
+        form = AnswerForm(request.POST)
+        if not form.is_valid():
+            pass
+        else:
+            answer = form.save(
+                author=request.user,
+                question=q
+            )
+            return redirect('question', question_id=question_id)
+    
     answers = getAnswers(q)
     answers_page = paginate(request, answers)
     
@@ -41,7 +57,8 @@ def question(request, question_id: int):
             'tags': getTopNTags(),
             'question': q,
             'answers': answers_page.object_list,
-            'page_obj': answers_page
+            'page_obj': answers_page,
+            'form': form,
         }
     )
 
@@ -160,4 +177,23 @@ def tag(request, tagName: str):
             'questions': questions_page.object_list,
             'page_obj': questions_page
         }
+    )
+
+@login_required
+def answer(request, question):
+    if request.method != 'POST':
+        form = AnswerForm()
+    else:
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(
+                author=request.user,
+                question=question
+            )
+            return redirect('question', question_id=question.id)
+
+    return render(
+        request,
+        'question.html',
+        question_id=request.question.id
     )

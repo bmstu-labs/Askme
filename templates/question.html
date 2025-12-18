@@ -3,15 +3,68 @@
 
 {% block content %}
 
+<!-- Вопрос -->
 {% include "layout/question.html" with q=question %}
 
 <hr>
 
+<!-- Форма ответа -->
+{% if user.is_authenticated %}
+<div class="card mb-4">
+    <div class="card-body">
+        <h4 class="mb-3">Your Answer</h4>
+        
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                <strong>Please correct the errors below:</strong>
+                <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        
+        <form method="POST" action="{% url 'question' question.id %}" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label for="id_text" class="form-label fw-semibold">Your Answer</label>
+                <textarea name="text" 
+                          id="id_text"
+                          class="form-control" 
+                          rows="4" 
+                          placeholder="Enter your answer here...">{{ form.text.value|default:'' }}</textarea>
+                {% if form.text.errors %}
+                    <div class="text-danger small mt-1">{{ form.text.errors|join:", " }}</div>
+                {% endif %}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Post Answer</button>
+        </form>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info mb-4">
+    <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">Login</a> to post an answer.
+</div>
+{% endif %}
+
+<!-- Список ответов -->
+<h4 class="mb-3">Answers ({{ answers|length }})</h4>
+
 {% for answer in answers %}
-    {% include 'layout/answer.html' %}
+    {% include 'layout/answer.html' with answer=answer question=question %}
+{% empty %}
+    <div class="alert alert-light text-center py-4">
+        <h5 class="mb-2">No answers yet</h5>
+        <p class="mb-0">Be the first to answer this question!</p>
+    </div>
 {% endfor %}
 
-
+<!-- Пагинация -->
 {% include "layout/paginator.html" %}
 
 {% endblock %}
