@@ -31,11 +31,19 @@ class SignupForm(forms.Form):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
         email = self.cleaned_data['email']
+        avatar = self.cleaned_data.get('avatar')
 
         user = User(username=username, email=email)
         user.set_password(password)
         user.save()
-        Profile.objects.create(user=user)
+
+        if avatar:
+            profile = Profile.objects.create(user=user, avatar=avatar)
+        else:
+            profile = Profile.objects.create(user=user)
+            # profile.avatar = 'avatars/default.jpg'
+        
+        profile.save()
         return user
     
 
