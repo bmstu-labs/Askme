@@ -16,7 +16,6 @@ class SignupForm(forms.Form):
     username = forms.CharField(max_length=100, label='Username')
     password = forms.CharField(widget=forms.PasswordInput)
     passwordConfirm = forms.CharField(widget=forms.PasswordInput, label='Confirm password')
-    email = forms.EmailField(max_length=100, label="Email")
     avatar = forms.ImageField(label="Avatar", required=False)
 
     def clean(self):
@@ -28,12 +27,10 @@ class SignupForm(forms.Form):
     def save(self):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
-        email = self.cleaned_data['email']
         avatar = self.cleaned_data.get('avatar')
 
         user = Profile(
             username=username,
-            email=email,
             avatar=avatar
         )
 
