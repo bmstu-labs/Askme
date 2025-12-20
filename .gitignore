@@ -5,6 +5,10 @@ avatars
 img
 images
 
+# Migrations
+app/migrations/*.py
+!app/migrations/__init__.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
