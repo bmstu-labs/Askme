@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.auth.models import User
 from app.models import Profile, Question, Tag, Answer
 
 class LoginForm(forms.Form):
@@ -30,11 +29,17 @@ class SignupForm(forms.Form):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
         email = self.cleaned_data['email']
+        avatar = self.cleaned_data.get('avatar')
 
-        user = User(username=username, email=email)
+        user = Profile(
+            username=username,
+            email=email,
+            avatar=avatar
+        )
+
         user.set_password(password)
         user.save()
-        Profile.objects.create(user=user)
+
         return user
     
 

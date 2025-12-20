@@ -1,14 +1,20 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+class Profile(AbstractUser):
+    avatar = models.ImageField(
+        upload_to='avatars/',
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        db_table = 'auth_user'
 
     def __str__(self):
-        return self.user.username
+        return self.username
 
 
 class Tag(models.Model):
@@ -36,7 +42,7 @@ class Question(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     tags = models.ManyToManyField(Tag, related_name='questions', through='QuestionTag')
 
@@ -61,7 +67,7 @@ class Answer(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Profile, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='answers')
 
     def __str__(self):
@@ -77,7 +83,7 @@ class QuestionLike(models.Model):
         (DISLIKE, 'Dislike'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='likes')
     value = models.SmallIntegerField(choices=VALUE_CHOICES)
     created_at = models.DateTimeField(default=timezone.now)
@@ -98,7 +104,7 @@ class AnswerLike(models.Model):
         (DISLIKE, 'Dislike'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete=models.CASCADE, related_name='likes')
     value = models.SmallIntegerField(choices=VALUE_CHOICES)
     created_at = models.DateTimeField(default=timezone.now)
