@@ -4,6 +4,7 @@ build
 avatars
 img
 images
+media
 
 # Migrations
 app/migrations/*.py

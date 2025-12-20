@@ -5,7 +5,6 @@ from django.utils import timezone
 
 class Profile(AbstractUser):
     avatar = models.ImageField(
-        upload_to='avatars/',
         blank=True,
         null=True
     )
