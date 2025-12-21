@@ -2,11 +2,11 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from typing import List
 
-from .forms import SignupForm, LoginForm, AskQuestionForm, AnswerForm
+from .forms import SignupForm, LoginForm, AskQuestionForm, AnswerForm, SettingsForm
 from .models import Question, Tag, Answer
 
 
@@ -141,11 +141,31 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-
+@login_required
 def settings(request):
+    if request.method != 'POST':
+        settingsForm = SettingsForm(user=request.user)
+    else:
+        settingsForm = SettingsForm(
+            request.POST,
+            request.FILES,
+            user=request.user
+        )
+        
+        if settingsForm.is_valid():
+            hasChanges = settingsForm.save(request.user)
+            if hasChanges:
+                messages.success(request, 'Your profile updated')
+            
+            return redirect('settings')
+
     return render(
         request=request,
-        template_name='settings.html'
+        template_name='settings.html',
+        context={
+            'form': settingsForm,
+            'user': request.user
+        }
     )
 
 
