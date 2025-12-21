@@ -141,7 +141,7 @@ def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
 
-@login_required
+@login_required(login_url='login')
 def settings(request):
     if request.method != 'POST':
         settingsForm = SettingsForm(user=request.user)
