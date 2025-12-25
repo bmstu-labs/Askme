@@ -32,6 +32,8 @@ urlpatterns = [
     path('settings/', views.settings, name='settings'),
     path('ask/', views.ask, name='ask'),
     path('tag/<str:tagName>/', views.tag, name='tag'),
+    path('question/<int:question_id>/vote/', views.voteQuestion, name='vote_question'),
+    path('question/<int:question_id>/mark_correct/', views.markCorrectAnswer, name='mark_correct_answer'),
 ]
 
 if settings.DEBUG:

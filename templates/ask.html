@@ -23,7 +23,6 @@
     <form method="POST" action="{% url 'ask' %}" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         
-        <!-- Title -->
         <div class="mb-4">
             <label class="form-label fw-semibold">{{ form.title.label }}</label>
             {{ form.title }}
@@ -32,7 +31,6 @@
             {% endif %}
         </div>
 
-        <!-- Details -->
         <div class="mb-4">
             <label class="form-label fw-semibold">{{ form.text.label }}</label>
             {{ form.text }}
@@ -41,7 +39,6 @@
             {% endif %}
         </div>
 
-        <!-- Tags -->
         <div class="mb-4">
             <label class="form-label fw-semibold">{{ form.tags.label }}</label>
             {{ form.tags }}
@@ -51,7 +48,6 @@
             {% endif %}
         </div>
 
-        <!-- Button -->
         <div class="mt-4">
             <button type="submit" 
                     class="btn btn-lg text-white fw-semibold shadow-sm px-4" 

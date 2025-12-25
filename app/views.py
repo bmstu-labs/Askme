@@ -1,14 +1,107 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from typing import List
+import json
 
 from .forms import SignupForm, LoginForm, AskQuestionForm, AnswerForm, SettingsForm
-from .models import Question, Tag, Answer
+from .models import Question, Tag, Answer, QuestionLike
 
+
+@login_required
+def markCorrectAnswer(request, question_id: int):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        answer_id = data.get('answer_id')
+        
+        if not answer_id:
+            return JsonResponse({'error': 'Answer ID is required'}, status=400)
+        
+        question = Question.objects.get(id=question_id)
+        answer = Answer.objects.get(id=answer_id, question=question)
+        
+        if question.author != request.user:
+            return JsonResponse(
+                {
+                    'error': 'Only the author of the question can mark correct answer'
+                },
+                status=403
+            )
+        
+        if answer.is_correct:
+            answer.is_correct = False
+            answer.save()
+        else:
+            answer.is_correct = True
+            answer.save()
+        
+        return JsonResponse({
+            'success': True,
+            'is_correct': answer.is_correct,
+            'answer_id': answer_id
+        })
+    
+    except Question.DoesNotExist:
+        return JsonResponse({'error': 'Question not found'}, status=404)
+    except Answer.DoesNotExist:
+        return JsonResponse({'error': 'Answer not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def voteQuestion(request, question_id: int):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        question = Question.objects.get(id=question_id)
+        value = int(data.get('value'))
+
+        # Check value
+
+        can_vote = QuestionLike.canVote(request.user, question)
+        if not can_vote:
+            return JsonResponse(
+                {
+                    'error': 'Cannot vote'
+                },
+                status=403
+            )
+        
+        like, created = QuestionLike.objects.update_or_create(
+            user=request.user,
+            question=question,
+            defaults={'value': value}
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'action': 'like' if value == 1 else 'dislike'
+        })
+    
+    except Question.DoesNotExist:
+        return JsonResponse(
+            {
+                'error': 'Question not found'
+            },
+            status=404
+        )
+    except Exception as e:
+        return JsonResponse(
+            {
+                'error': str(e)
+            },
+            status=500
+        )
+    
 
 def paginate(request, objects, per_page=5):
     paginator = Paginator(objects, per_page)

@@ -1,18 +1,26 @@
 {% load static %}
 
-<div class="card mb-3">
+<div class="card mb-3 answer-card {% if answer.is_correct %}border-success border-2{% endif %}" 
+     data-answer-id="{{ answer.id }}">
   <div class="card-body d-flex align-items-start gap-3">
 
-    <div class="text-center" style="width: 60px;">
-      <div class="border rounded py-2 mb-2">
-        <strong style="font-size: 1.2rem;">{{ answer.rating|default:0 }}</strong><br>
-        <span class="text-muted" style="font-size: 0.8rem;">votes</span>
-      </div>
-    </div>
+    {% if user == question.author %}
+    <button class="btn btn-sm mark-correct-btn {% if answer.is_correct %}btn-success{% else %}btn-outline-success{% endif %}"
+            data-answer-id="{{ answer.id }}"
+            data-question-id="{{ question.id }}">
+      {% if answer.is_correct %}
+        Correct
+      {% else %}
+        Mark correct
+      {% endif %}
+    </button>
+    {% elif answer.is_correct %}
+    <span class="badge bg-success">✓ Correct Answer</span>
+    {% endif %}
 
     <div class="me-3">
-      {% if answer.author.profile.avatar %}
-        <img src="{{ answer.author.profile.avatar.url }}" 
+      {% if answer.author.avatar %}
+        <img src="{{ answer.author.avatar.url }}" 
              alt="{{ answer.author.username }}" 
              class="rounded border" 
              style="width: 80px; height: 80px; object-fit: cover;">

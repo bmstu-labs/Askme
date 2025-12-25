@@ -9,7 +9,6 @@
 
 		<link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
 		<link rel="stylesheet" href="{% static 'style.css' %}?v=1">
-		<!-- Убрали отсюда bootstrap.js, он будет внизу -->
 	</head>
 	<body>
 		<nav class="navbar bg-white border-bottom shadow-sm" style="min-height: 72px;">
@@ -19,7 +18,6 @@
 
 				<div class="d-flex align-items-center">
 					{% if user.is_authenticated %}
-					<!-- Если пользователь авторизован -->
 					<img src="{{ user.avatar.url }}"
 						alt="{{ user.username }}"
 						width="44"
@@ -35,7 +33,6 @@
 						</div>
 					</div>
 					{% else %}
-					<!-- Если пользователь не авторизован -->
 					<div class="d-flex flex-column justify-content-center lh-sm text-end">
 						<div class="small">
 							<a href="{% url 'login' %}" class="text-secondary text-decoration-none me-3">Login</a>
@@ -71,8 +68,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Один скрипт Bootstrap в конце -->
 		<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 	</body>
 </html>
